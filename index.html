@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Stack+Sans+Text:wght@200..700&display=swap" rel="stylesheet">
+  <title>Tic Tac Toe</title>
+
+  <style>
+    :root{
+      --bg-color:#ffb3c6;
+      --text-color:#000;
+      --accent:#fb6f92;
+      --grid-color:#000;
+      --font-main:"Stack Sans Text", sans-serif;
+    }
+
+    .stack-sans-text-<uniquifier> {
+     font-family: "Stack Sans Text", sans-serif;
+     font-optical-sizing: auto;
+     font-weight: <weight>;
+     font-style: normal;
+    }
+
+    body{
+      margin:0;
+      background:var(--bg-color);
+      font-family:var(--font-main);
+      color:var(--text-color);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      min-height:100vh;
+    }
+
+    h1,h2,h3{margin:0;text-align:center;color:var(--accent)}
+
+    /* ---------- PAGE D'ACCUEIL ---------- */
+    #home{
+      width:100%;
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:18px;
+    }
+
+    #photo{
+      width:90%;
+      max-width:400px;
+      gap:8px;
+    }
+    #photo img{width:100%; border-radius:10px}
+
+    #play-btn{
+      background:var(--accent);
+      color:#fff;
+      padding:12px 20px;
+      border:none;
+      border-radius:10px;
+      font-size:1.2rem;
+      cursor:pointer;
+      font-family: inherit;
+    }
+
+    /* ---------- GAME ---------- */
+    #game-section{display:none; width:100%; padding-top:20px;}
+
+    #game-container{
+      width:100%; max-width:360px;
+      display:flex; justify-content:center;
+    }
+
+    #game{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      width:94%; max-width:360px;
+    }
+
+    .cell{
+      width:100%; aspect-ratio:1/1;
+      border:3px solid var(--grid-color);
+      border-radius:10px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:2.4rem;
+      cursor:pointer;
+      touch-action:manipulation;
+      user-select:none;
+    }
+
+    /* ---------- MODAL ---------- */
+    .modal-backdrop{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,0.4);
+      display:none;
+      align-items:flex-end;
+      justify-content:center;
+      padding:12px;
+      z-index:2000;
+    }
+
+    .modal{
+      width:100%; max-width:420px;
+      background:#fff;
+      border-radius:12px;
+      padding:20px;
+      text-align:center;
+    }
+
+    .btn{
+      padding:10px 16px;
+      background:var(--accent);
+      color:#fff;
+      border:none;
+      border-radius:10px;
+      font-size:1rem;
+      cursor:pointer;
+      font-family: inherit;
+    }
+    .btn-secondary{
+      background:#555;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ---------- PAGE D'ACCUEIL ---------- -->
+  <div id="home">
+    <h1>Joyeux annivvvv Cynthia 💞💞</h1>
+
+    <div id="photo">
+      <img src="photo.jpg" alt="photo" />
+    </div>
+
+    <button id="play-btn">Jouer 🎉</button>
+  </div>
+
+  <!-- ---------- JEU ---------- -->
+  <div id="game-section">
+    <h2>Tic Tac Toe</h2>
+    <div id="game-container">
+      <div id="game"></div>
+    </div>
+  </div>
+
+  <!-- ---------- MODAL ---------- -->
+  <div id="modal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal">
+      <h3 id="modal-title"></h3>
+      <p id="modal-message"></p>
+      <div style="display:flex; gap:10px; justify-content:center; margin-top:12px;">
+        <button id="restart-btn" class="btn">Rejouer</button>
+        <button id="close-btn" class="btn btn-secondary">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  /* ---------- MESSAGES ---------- */
+  const MSG = {
+    win: "t'as gagné 😋🤭 ! t'auras droit à une surprise lundi 🤗",
+    lose: "t'as perdu 🫵🏾🤣 ! pour te consoler t'auras une surprise lundi 🤗",
+    draw: "match nul 😨😨 ! pas grave c'est ton anniv t'as gagné une surprise lundi 🤗"
+  };
+
+  /* ---------- HOME ---------- */
+  const home = document.getElementById('home');
+  const gameSection = document.getElementById('game-section');
+  document.getElementById('play-btn').onclick = ()=>{
+    home.style.display='none';
+    gameSection.style.display='block';
+  }
+
+  /* ---------- GAME ---------- */
+  let board = Array(9).fill('');
+  let current = 'X';
+  const gameEl = document.getElementById('game');
+
+  function render(){
+    gameEl.innerHTML = '';
+    board.forEach((v,i)=>{
+      const c = document.createElement('div');
+      c.className='cell';
+      c.textContent = v;
+      c.onclick = ()=>play(i);
+      gameEl.appendChild(c);
+    });
+  }
+
+  function play(i){
+    if(board[i] || winner() || board.every(Boolean)) return;
+    board[i] = current;
+    current = current === 'X' ? 'O' : 'X';
+    render();
+    const w = winner();
+    if(w || board.every(Boolean)) showPopup(w);
+  }
+
+  function winner(){
+    const W=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    for(const [a,b,c] of W){ if(board[a] && board[a]===board[b] && board[a]===board[c]) return board[a]; }
+    return null;
+  }
+
+  /* ---------- POPUP ---------- */
+  const modal = document.getElementById('modal');
+  const mTitle = document.getElementById('modal-title');
+  const mMsg = document.getElementById('modal-message');
+
+  function showPopup(w){
+    if(w){
+      mTitle.textContent = (w==='X') ? 'Victoire !' : 'Défaite !';
+      mMsg.textContent = (w==='X') ? MSG.win : MSG.lose;
+    } else {
+      mTitle.textContent = 'Match nul !';
+      mMsg.textContent = MSG.draw;
+    }
+    modal.style.display='flex';
+    modal.setAttribute('aria-hidden','false');
+  }
+
+  document.getElementById('restart-btn').onclick = ()=>{
+    board = Array(9).fill('');
+    current = 'X';
+    modal.style.display='none';
+    render();
+  };
+
+  document.getElementById('close-btn').onclick = ()=>{
+    modal.style.display='none';
+  };
+
+  modal.onclick = (e)=>{ if(e.target===modal) modal.style.display='none'; }
+
+  render();
+</script>
+
+</body>
+</html>
