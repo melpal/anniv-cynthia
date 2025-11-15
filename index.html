@@ -37,7 +37,6 @@
 
     h1,h2,h3{margin:0;text-align:center;color:var(--accent)}
 
-    /* ---------- PAGE D'ACCUEIL ---------- */
     #home{
       width:100%;
       padding:20px;
@@ -64,13 +63,11 @@
       cursor:pointer;
       font-family: inherit;
     }
-
-    /* ---------- GAME ---------- */
+    
     #game-section{display:none; width:100%; padding-top:20px;}
 
     #game-container{
       width:100%;
-      max-width:360px;
       display:flex;
       justify-content:center;
     }
@@ -94,7 +91,6 @@
       user-select:none;
     }
 
-    /* ---------- MODAL ---------- */
     .modal-backdrop{
       position:fixed; inset:0;
       background:rgba(0,0,0,0.4);
@@ -131,7 +127,6 @@
 
 <body>
 
-  <!-- ---------- PAGE D'ACCUEIL ---------- -->
   <div id="home">
     <h1>Joyeux annivvvv Cynthia 💞💞</h1>
 
@@ -142,7 +137,6 @@
     <button id="play-btn">Jouer 🎉</button>
   </div>
 
-  <!-- ---------- JEU ---------- -->
   <div id="game-section">
     <h2>Tic Tac Toe</h2>
     <div id="game-container">
@@ -150,7 +144,6 @@
     </div>
   </div>
 
-  <!-- ---------- MODAL ---------- -->
   <div id="modal" class="modal-backdrop" aria-hidden="true">
     <div class="modal">
       <h3 id="modal-title"></h3>
@@ -164,14 +157,12 @@
   </div>
 
 <script>
-  /* ---------- MESSAGES ---------- */
   const MSG = {
     win: "t'as gagné 😋🤭 ! t'auras droit à une surprise lundi 🤗",
     lose: "t'as perdu 🫵🏾🤣 ! pour te consoler t'auras une surprise lundi 🤗",
     draw: "match nul 😨😨 ! pas grave c'est ton anniv t'as gagné une surprise lundi 🤗"
   };
 
-  /* ---------- HOME ---------- */
   const home = document.getElementById('home');
   const gameSection = document.getElementById('game-section');
   document.getElementById('play-btn').onclick = ()=>{
@@ -179,7 +170,6 @@
     gameSection.style.display='block';
   }
 
-  /* ---------- GAME ---------- */
   let board = Array(9).fill('');
   let current = 'X';
   const gameEl = document.getElementById('game');
@@ -210,7 +200,6 @@
     return null;
   }
 
-  /* ---------- POPUP ---------- */
   const modal = document.getElementById('modal');
   const mTitle = document.getElementById('modal-title');
   const mMsg = document.getElementById('modal-message');
